@@ -1,11 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
+from math import ceil
 
 app = Flask(__name__)
-
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///blog.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
 db = SQLAlchemy(app)
 
 class BlogPost(db.Model):
@@ -17,7 +16,9 @@ class BlogPost(db.Model):
 
 @app.route('/')
 def index():
-    posts = BlogPost.query.order_by(BlogPost.date_created.desc()).all()
+    page = request.args.get('page', 1, type=int)
+    per_page = 5
+    posts = BlogPost.query.order_by(BlogPost.date_created.desc()).paginate(page=page, per_page=per_page)
     return render_template('index.html', posts=posts)
 
 @app.route('/add', methods = ['POST'])
