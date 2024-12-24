@@ -13,7 +13,7 @@
 
         <!-- Form to Add a New Post -->
         <div class="card p-4 mb-4">
-            <form action="/add" method="POST">
+            <form action="/add" method="POST" enctype="multipart/form-data">
                 <div class="mb-3">
                     <label for="title" class="form-label">Title</label>
                     <input type="text" name="title" class="form-control" placeholder="Title" required>
@@ -21,6 +21,10 @@
                 <div class="mb-3">
                     <label for="content" class="form-label">Content</label>
                     <textarea name="content" class="form-control" rows="3" placeholder="Content" required></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="image" class="form-label">Upload Image</label>
+                    <input type="file" name="image" class="form-control">
                 </div>
                 <button type="submit" class="btn btn-primary">Add Post</button>
             </form>
@@ -33,15 +37,17 @@
                     <div>
                         <h4>{{ post.title }}</h4>
                         <p>{{ post.content }}</p>
+                        {% if post.image_path %}
+                            <img src="{{ url_for('static', filename=post.image_path.split('static/')[-1]) }}" class="img-fluid mt-2" style="max-width: 200px;">
+                        {% endif %}
                         <small class="text-muted">Posted on {{ post.date_created }}</small>
                     </div>
-                    <form action="/delete/{{ post.id }}" method="POST">
+                    <form action="/delete/{{ post.id }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this post?');">
                         <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                     </form>
                 </li>
             {% endfor %}
         </ul>
-        
         <!-- Pagination Controls -->
         <nav aria-label="Page navigation" class="mt-4">
             <ul class="pagination justify-content-center">
